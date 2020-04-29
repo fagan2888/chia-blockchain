@@ -14,7 +14,7 @@ from src.types.peer_info import PeerInfo
 from src.types.proof_of_time import ProofOfTime
 from src.types.sized_bytes import bytes32
 from src.util.api_decorators import api_request
-from src.util.ints import uint64, int512, uint128
+from src.util.ints import uint8, uint64, int512, uint128
 
 log = logging.getLogger(__name__)
 
@@ -298,7 +298,6 @@ class Timelord:
             try:
                 msg = data.decode()
             except Exception as e:
-                log.error(f"Exception while decoding data {e}")
                 pass
 
             if msg == "STOP":
@@ -339,6 +338,9 @@ class Timelord:
 
                 y_bytes = stdout_bytes_io.read(y_size)
 
+                witness_type = uint8(
+                    int.from_bytes(stdout_bytes_io.read(1), "big", signed=True)
+                )
                 proof_bytes: bytes = stdout_bytes_io.read()
 
                 # Verifies our own proof just in case
@@ -351,7 +353,7 @@ class Timelord:
                     challenge_hash,
                     iterations_needed,
                     output,
-                    self.config["n_wesolowski"],
+                    witness_type,
                     proof_bytes,
                 )
 
