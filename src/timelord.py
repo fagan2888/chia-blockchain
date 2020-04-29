@@ -297,7 +297,7 @@ class Timelord:
             msg = ""
             try:
                 msg = data.decode()
-            except Exception as e:
+            except Exception:
                 pass
 
             if msg == "STOP":
